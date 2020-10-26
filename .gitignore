@@ -1,3 +1,5 @@
 director/target/*
+models/target/*
 worker/target/*
+*.log
 
