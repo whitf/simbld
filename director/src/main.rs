@@ -39,8 +39,8 @@ fn main() {
 
 	// @TODO - Most of the println! stuff should be handled by the logger (to std out or std err).
 	println!("- config path = {}", config_file);
-
 	let mut config = config::Config::new(config_file);
+	config.save();
 
 	let mut db = db::Db::new();
 	db.verify();
