@@ -1,5 +1,5 @@
 [package]
-name = "simbld-models"
+name = "simbld_models"
 version = "0.1.0"
 authors = ["whit <wfackler@gmail.com>"]
 edition = "2018"

@@ -118,7 +118,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "simbld-models"
+name = "simbld_models"
 version = "0.1.0"
 dependencies = [
  "serde",
