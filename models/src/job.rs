@@ -1,7 +1,8 @@
+use serde::{Deserialize, Serialize};
 use std::time::SystemTime;
 use uuid::Uuid;
 
-#[derive(Copy, Clone, Debug, ToString)]
+#[derive(Copy, Clone, Debug, Deserialize, Serialize, ToString)]
 pub enum JobStatus {
 	Blocked,
 	Cancelled,

@@ -3,4 +3,5 @@ models/target/*
 worker/target/*
 test/test_client/target/*
 *.log
+*.swp
 
