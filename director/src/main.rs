@@ -57,7 +57,7 @@ fn main() {
 	println!("+ Starting communication module...");
 
 	let comm_handle = thread::spawn(move || {
-		let mut comm_process = communication::Communication::new();
+		let mut comm_process = communication::Communication::new(config.comm_address, config.comm_port);
 		comm_process.run();
 	});
 
