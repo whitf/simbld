@@ -3,47 +3,26 @@ use std::io::{Read, Write};
 use std::net::{TcpListener, TcpStream, Shutdown};
 use std::thread;
 use std::str::from_utf8;
+use std::sync::mpsc::Sender;
 use std::time::Duration;
 
-use simbld_models::message::{Message, MessageType};
+use simbld_models::message::{Message, MessageType, ResponseType};
 
-pub fn handle_worker_request(mut stream: TcpStream) {
+pub fn handle_worker_request(mut stream: TcpStream, ftx: Sender<Message>) {
 	let mut data = [0 as u8; 64];
 
 	match stream.read(&mut data) {
 		Ok(size) => {
-			println!("received data");
-			println!("size = {}", size);
-
 			let msg: Message = bincode::deserialize(&data).unwrap();
 
-			println!("message = {:?}", msg);
+			//println!("message = {:?}", msg);
 
-			match msg.message_type {
-				MessageType::Online => {
-					println!("handling worker online message");
-				},
-				MessageType::Offline => {
-					println!("handling worker offline message");
-				},
-				MessageType::Job => {
-					println!("handling job-related message");
-				},
-				_ => {
-					println!("some other message");
-				},
-			}
-
-
-
-
-
+			ftx.send(msg).unwrap();
 
 			let mut response = Message::new(MessageType::Response);
-			response.body = Some(String::from("Okay"));
+			response.response_type = Some(ResponseType::Received);
 
 			let bytes = bincode::serialize(&response).unwrap();
-
 			stream.write(&bytes).unwrap();
 		},
 		Err(e) => {
@@ -57,36 +36,44 @@ pub struct Communication {
 	pub online:						bool,
 	pub address:					String,
 	pub port:						String,
+	pub ftx:						Sender<Message>,
 }
 
 impl Communication {
-	pub fn new(address: String, port: String) -> Self {
+	pub fn new(address: String, port: String, ftx: Sender<Message>) -> Self {
+		let ftx = ftx.clone();
+
 		Communication {
 			online: false,
 			address,
 			port,
+			ftx,
 		}
 	}
 
 	pub fn run(&mut self) {
 		self.online = true;
 
-		let tcp_listener = format!("{}:{}", self.address, self.port);
-		let listener = TcpListener::bind(tcp_listener).unwrap();
+		while self.online {
 
-		for stream in listener.incoming() {
-			match stream {
-				Ok(stream) => {
-					thread::spawn(move || {
-						handle_worker_request(stream)
-					});
-				}
-				Err(e) => {
-					println!("Tcp connection error: {}", e);
+			let tcp_listener = format!("{}:{}", self.address, self.port);
+			let listener = TcpListener::bind(tcp_listener).unwrap();
+
+			for stream in listener.incoming() {
+				match stream {
+					Ok(stream) => {
+						let ftx = self.ftx.clone();
+						thread::spawn(move || {
+							handle_worker_request(stream, ftx)
+						});
+					}
+					Err(e) => {
+						println!("Tcp connection error: {}", e);
+					}
 				}
 			}
-		}
 
-		drop(listener);
+			drop(listener);
+		}
 	}
 }

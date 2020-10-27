@@ -1,7 +1,10 @@
 use clap::{App, Arg};
 use std::env;
 use std::path::{Path, PathBuf};
+use std::sync::mpsc;
 use std::thread;
+
+use simbld_models::message::Message;
 
 pub mod api;
 pub mod communication;
@@ -47,6 +50,10 @@ fn main() {
 
 	let mut mimir = mimir::Mimir::new();
 
+	// Set up inter process communication channels.
+	let (ftx, frx) = mpsc::channel::<Message>();
+
+
 	println!("+ Starting api module...");
 
 	let api_handle = thread::spawn(move || {
@@ -56,15 +63,16 @@ fn main() {
 
 	println!("+ Starting communication module...");
 
+	//let ftx = ftx.clone();
 	let comm_handle = thread::spawn(move || {
-		let mut comm_process = communication::Communication::new(config.comm_address, config.comm_port);
+		let mut comm_process = communication::Communication::new(config.comm_address, config.comm_port, ftx.clone());
 		comm_process.run();
 	});
 
 	println!("+ Starting freyr module...");
 
 	let freyr_handle = thread::spawn(move || {
-		let mut freyr_process = freyr::Freyr::new();
+		let mut freyr_process = freyr::Freyr::new(frx);
 		freyr_process.run();
 	});
 
