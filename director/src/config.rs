@@ -1,6 +1,6 @@
-use serde::{Deserialize, Serialize};
+use serde::{Serialize};
 use std::fs;
-use toml::{map::Map, Value};
+use toml::{Value};
 use uuid::Uuid;
 
 #[derive(Serialize)]
@@ -53,9 +53,6 @@ impl Config {
 			match k.as_str() {
 				"id" => {
 					id = Uuid::parse_str(&v_str).unwrap();
-				},
-				"name" => {
-					name = v_str;
 				},
 				"api_address" => {
 					api_address = v_str;

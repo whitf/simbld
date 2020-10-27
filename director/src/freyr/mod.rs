@@ -1,6 +1,4 @@
 use std::sync::mpsc::Receiver;
-use std::thread;
-use std::time::Duration;
 
 use simbld_models::message::{Message, MessageType};
 
@@ -27,19 +25,19 @@ impl Freyr {
 				// register worker
 				println!("(freyr) worker online message");
 
-				Ok((0i32))
+				Ok(0i32)
 			},
 			MessageType::Offline => {
 				// remove worker
 				println!("(freyr) worker offline message");
 
-				Ok((0i32))
+				Ok(0i32)
 			},
 			MessageType::Job => {
 				// Process job related events.
 				println!("(freyr) working job message");
 
-				Ok((0i32))
+				Ok(0i32)
 			},
 			_ => Err("Unrecognized message_type."),
 		}

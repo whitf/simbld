@@ -1,6 +1,6 @@
 use clap::{App, Arg};
 use std::env;
-use std::path::{Path, PathBuf};
+use std::path::{PathBuf};
 use std::sync::mpsc;
 use std::thread;
 
@@ -48,7 +48,7 @@ fn main() {
 	let mut db = db::Db::new();
 	db.verify();
 
-	let mut mimir = mimir::Mimir::new();
+	let _mimir = mimir::Mimir::new();
 
 	// Set up inter process communication channels.
 	let (ftx, frx) = mpsc::channel::<Message>();

@@ -2,9 +2,7 @@ use bincode;
 use std::io::{Read, Write};
 use std::net::{TcpListener, TcpStream, Shutdown};
 use std::thread;
-use std::str::from_utf8;
 use std::sync::mpsc::Sender;
-use std::time::Duration;
 
 use simbld_models::message::{Message, MessageType, ResponseType};
 
@@ -12,7 +10,7 @@ pub fn handle_worker_request(mut stream: TcpStream, ftx: Sender<Message>) {
 	let mut data = [0 as u8; 64];
 
 	match stream.read(&mut data) {
-		Ok(size) => {
+		Ok(_) => {
 			let msg: Message = bincode::deserialize(&data).unwrap();
 
 			//println!("message = {:?}", msg);
