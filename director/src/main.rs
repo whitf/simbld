@@ -7,12 +7,12 @@ use std::thread;
 use simbld_models::message::Message;
 
 pub mod api;
-pub mod communication;
+pub mod communication;			// @TODO: rename this as bifrost to match the worker.
 pub mod config;
 pub mod db;
 pub mod freyr;
 pub mod heimdallr;
-pub mod mimir;
+pub mod mimir;					// @TODO update this to use the same logging library as the worker.
 pub mod web;
 
 
