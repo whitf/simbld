@@ -3,6 +3,7 @@ use serde::Serializer;
 use std::net::TcpStream;
 use std::io::{Read, Write};
 use std::str::from_utf8;
+use uuid::Uuid;
 
 use simbld_models::message;
 
@@ -14,9 +15,13 @@ fn main() {
 
 			//let msg = b"HelloFromTheOtherSide";
 
-			let msg = message::Message::new(message::MessageType::Online);
+			let mut msg = message::Message::new(message::MessageType::Online);
+			let worker_id = Uuid::parse_str("46a8f04b-bedb-4941-a85a-121a7dee1179").unwrap();
+			msg.worker_id = Some(worker_id);
 
 			//let bytes:Vec<u8> = bincode::serialize(&msg).unwrap(); 
+
+			println!("message = {:?}", msg);
 
 			let bytes: Vec<u8> = bincode::serialize(&msg).unwrap();
 

@@ -7,7 +7,7 @@ use std::sync::mpsc::Sender;
 use simbld_models::message::{Message, MessageType, ResponseType};
 
 pub fn handle_worker_request(mut stream: TcpStream, ftx: Sender<Message>) {
-	let mut data = [0 as u8; 64];
+	let mut data = [0 as u8; 128];
 
 	match stream.read(&mut data) {
 		Ok(_) => {
