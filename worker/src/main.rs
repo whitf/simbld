@@ -1,9 +1,11 @@
 use clap::{App, Arg};
 use std::env;
 use std::path::PathBuf;
+use std::sync::mpsc;
 use std::thread;
 
 use simbld_models::message::Message;
+use simbld_models::{module, log};
 use simbld_mimir::mimir::Mimir;
 
 pub mod bifrost;
@@ -46,9 +48,19 @@ fn main() {
 		println!("Error with database configuration...");
 	}
 
-	let _mimir = Mimir::new();
+	let (ltx, lrx) = mpsc::channel::<log::Log>();
+
+	let pwd = env::current_dir().unwrap();
+	let log_dir = PathBuf::from(pwd.to_str().unwrap().to_owned() + "/data/var/log/simbld_worker");
+
+	let mimir_handle = thread::spawn(move || {
+		let mut mimir_process = Mimir::new(lrx, log_dir.to_str().unwrap().to_owned());
+		mimir_process.run();
+	});
+
 	let _bf = bifrost::Bifrost::new();
 
+	ltx.send(log::Log::new(module::ModuleName::DbWorker, log::LogType::System, String::from("Starting loki_process.")));
 
 	let loki_handle = thread::spawn(move || {
 		let mut loki_process = loki::Loki::new();
@@ -60,6 +72,7 @@ fn main() {
 		sif_process.run();
 	});
 
+	mimir_handle.join().unwrap();
 	loki_handle.join().unwrap();
 	sif_handle.join().unwrap();
 
