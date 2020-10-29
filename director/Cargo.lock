@@ -190,9 +190,19 @@ dependencies = [
  "bincode",
  "clap",
  "serde",
+ "simbld_mimir",
  "simbld_models",
  "toml",
  "uuid",
+]
+
+[[package]]
+name = "simbld_mimir"
+version = "0.1.0"
+dependencies = [
+ "simbld_models",
+ "strum",
+ "strum_macros",
 ]
 
 [[package]]

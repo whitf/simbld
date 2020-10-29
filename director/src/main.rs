@@ -5,6 +5,9 @@ use std::sync::mpsc;
 use std::thread;
 
 use simbld_models::message::Message;
+use simbld_models::module::ModuleName;
+use simbld_models::log::{Log, LogType};
+use simbld_mimir::mimir::Mimir;
 
 pub mod api;
 pub mod communication;			// @TODO: rename this as bifrost to match the worker.
@@ -12,7 +15,6 @@ pub mod config;
 pub mod db;
 pub mod freyr;
 pub mod heimdallr;
-pub mod mimir;					// @TODO update this to use the same logging library as the worker.
 pub mod web;
 
 
@@ -45,10 +47,17 @@ fn main() {
 	let mut config = config::Config::new(config_file);
 	config.save();
 
+	// Logging process.
+	let (ltx, lrx) = mpsc::channel::<Log>();
+	let log_dir = PathBuf::from(pwd.to_str().unwrap().to_owned() + "/data/var/log/simbld_director");
+	let mimir_handle = thread::spawn(move || {
+		let mut mimir_process = Mimir::new(lrx, log_dir.to_str().unwrap().to_owned());
+		mimir_process.run();
+	});
+
+	ltx.send(Log::new(ModuleName::Director, LogType::System, String::from("Starting db_process..."))).unwrap();
 	let mut db = db::Db::new();
 	db.verify();
-
-	let _mimir = mimir::Mimir::new();
 
 	// Set up inter process communication channels.
 	let (ftx, frx) = mpsc::channel::<Message>();
@@ -96,6 +105,7 @@ fn main() {
 	comm_handle.join().unwrap();
 	freyr_handle.join().unwrap();
 	heimdallr_handle.join().unwrap();
+	mimir_handle.join().unwrap();
 	web_handle.join().unwrap();
 
 	println!();

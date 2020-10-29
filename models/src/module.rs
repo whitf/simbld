@@ -7,10 +7,12 @@ pub enum ModuleName {
 	Communication,
 	DbDirector,
 	DbWorker,
+	Director,
 	Freyr,
 	Heimdallr,
 	Loki,
 	Mimir,
 	Sif,
 	Web,
+	Worker,
 }

@@ -60,7 +60,7 @@ fn main() {
 
 	let _bf = bifrost::Bifrost::new();
 
-	ltx.send(log::Log::new(module::ModuleName::DbWorker, log::LogType::System, String::from("Starting loki_process.")));
+	ltx.send(log::Log::new(module::ModuleName::DbWorker, log::LogType::System, String::from("Starting loki_process."))).unwrap();
 
 	let loki_handle = thread::spawn(move || {
 		let mut loki_process = loki::Loki::new();

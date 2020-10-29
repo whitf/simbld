@@ -32,8 +32,6 @@ impl Mimir {
     pub fn run(&mut self) {
     	self.online = true;
 
-    	println!("starting mimir.run()");
-
     	while self.online {
     		let data = self.lrx.recv();
     		let log: log::Log = data.unwrap();
