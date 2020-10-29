@@ -1,6 +1,6 @@
 use serde::{Deserialize, Serialize};
 
-#[derive(Debug, Deserialize, Serialize, ToString)]
+#[derive(Clone, Debug, Deserialize, Serialize, ToString)]
 pub enum ModuleName {
 	Api,
 	Bifrost,

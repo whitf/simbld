@@ -72,9 +72,10 @@ fn main() {
 
 	println!("+ Starting communication module...");
 
-	//let ftx = ftx.clone();
+	let comm_ltx = ltx.clone();
+	let comm_ftx = ftx.clone();
 	let comm_handle = thread::spawn(move || {
-		let mut comm_process = communication::Communication::new(config.comm_address, config.comm_port, ftx.clone());
+		let mut comm_process = communication::Communication::new(config.comm_address, config.comm_port, comm_ltx, comm_ftx);
 		comm_process.run();
 	});
 

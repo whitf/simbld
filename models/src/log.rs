@@ -3,7 +3,7 @@ use std::time::SystemTime;
 
 use crate::module::ModuleName;
 
-#[derive(Debug, Deserialize, Serialize, ToString)]
+#[derive(Clone, Debug, Deserialize, Serialize, ToString)]
 pub enum LogType {
 	Access,
 	Critical,
@@ -14,7 +14,7 @@ pub enum LogType {
 	Warning,
 }
 
-#[derive(Debug, Deserialize, Serialize)]
+#[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct Log {
 	pub message:				String,
 	pub module:					ModuleName,

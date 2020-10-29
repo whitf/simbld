@@ -5,6 +5,8 @@ use std::thread;
 use std::sync::mpsc::Sender;
 
 use simbld_models::message::{Message, MessageType, ResponseType};
+use simbld_models::module::ModuleName;
+use simbld_models::log::{Log, LogType};
 
 pub fn handle_worker_request(mut stream: TcpStream, ftx: Sender<Message>) {
 	let mut data = [0 as u8; 128];
@@ -34,23 +36,27 @@ pub struct Communication {
 	pub online:						bool,
 	pub address:					String,
 	pub port:						String,
+	pub ltx:						Sender<Log>,
 	pub ftx:						Sender<Message>,
 }
 
 impl Communication {
-	pub fn new(address: String, port: String, ftx: Sender<Message>) -> Self {
+	pub fn new(address: String, port: String, ltx: Sender<Log>, ftx: Sender<Message>) -> Self {
 		let ftx = ftx.clone();
 
 		Communication {
 			online: false,
 			address,
 			port,
+			ltx,
 			ftx,
 		}
 	}
 
 	pub fn run(&mut self) {
 		self.online = true;
+
+		self.ltx.send(Log::new(ModuleName::Communication, LogType::System, String::from("Communication module online."))).unwrap();
 
 		while self.online {
 
