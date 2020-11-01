@@ -64,6 +64,17 @@ dependencies = [
 ]
 
 [[package]]
+name = "generate_worker_data"
+version = "0.1.0"
+dependencies = [
+ "rand",
+ "simbld_models",
+ "strum",
+ "strum_macros",
+ "uuid",
+]
+
+[[package]]
 name = "getrandom"
 version = "0.1.15"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -189,6 +200,7 @@ version = "0.1.0"
 dependencies = [
  "bincode",
  "clap",
+ "generate_worker_data",
  "serde",
  "simbld_mimir",
  "simbld_models",

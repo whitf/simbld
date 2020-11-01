@@ -52,18 +52,31 @@ impl JobGenerator {
 	}
 
 	pub fn run(&mut self, worker_id: Uuid, jtx: Sender<Job>) {
+		
 		self.online = true;
+
+		println!("J START JobGenerator::run()");
 
 		let mut rng = rand::thread_rng();
 		let mut count = 0u32;
 
-		while self.online && (count <= (self.limit as u32)) {
+		while self.online {
 
 			let mut job = Job::new(self.build_id, String::from("test_job_") + &count.to_string(), String::from("config_file"), count);
 			job.suspended = false;
 			job.worker = Some(worker_id);
 
+			println!("J SEND JobGenerator::run()");
+
 			jtx.send(job).unwrap();
+
+			count = count + 1;
+
+			if self.limit != -1 {
+				if (self.limit as u32 - 1) < count {
+					self.online = false;
+				}
+			}
 
 			let mut nap: Duration = self.tic;
 			if self.rand {
@@ -71,8 +84,8 @@ impl JobGenerator {
 			}
 
 			thread::sleep(nap);
-
-			count = count + 1;
 		}
+
+		println!("J END JobGenerator::run()")
 	}
 }

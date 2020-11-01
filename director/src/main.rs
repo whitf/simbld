@@ -3,11 +3,17 @@ use std::env;
 use std::path::{PathBuf};
 use std::sync::mpsc;
 use std::thread;
+use std::time::Duration;
+use uuid::Uuid;
 
+use simbld_models::job::Job;
 use simbld_models::message::Message;
 use simbld_models::module::ModuleName;
 use simbld_models::log::{Log, LogType};
 use simbld_mimir::mimir::Mimir;
+
+// DEBUG stuffs
+use generate_worker_data::job_generator::JobGenerator;
 
 pub mod api;
 pub mod communication;			// @TODO: rename this as bifrost to match the worker.
@@ -74,8 +80,11 @@ fn main() {
 
 	let comm_ltx = ltx.clone();
 	let comm_ftx = ftx.clone();
+
+	let (comm_jtx, comm_jrx) = mpsc::channel::<Job>();
+
 	let comm_handle = thread::spawn(move || {
-		let mut comm_process = communication::Communication::new(config.comm_address, config.comm_port, comm_ltx, comm_ftx);
+		let mut comm_process = communication::Communication::new(config.comm_address, config.comm_port, comm_ltx, comm_ftx, comm_jrx);
 		comm_process.run();
 	});
 
@@ -102,12 +111,26 @@ fn main() {
 
 	println!("simbld director v.{} is up and running.", VERSION);
 
+	// periodically insert worker test data.
+	println!("periodically inserting worker test data...");
+	let build_id = Uuid::new_v4();
+	let worker_id = Uuid::new_v4();
+	let test_comm_jtx = comm_jtx.clone();
+	println!("generating test data for worker: {:?}", worker_id);
+
+	let test_handle_1 = thread::spawn(move || {
+		let mut job_gen_process = JobGenerator::new(build_id, None, Some(Duration::from_secs(5)), Some(true));
+		job_gen_process.run(worker_id, test_comm_jtx);
+	});
+
 	api_handle.join().unwrap();
 	comm_handle.join().unwrap();
 	freyr_handle.join().unwrap();
 	heimdallr_handle.join().unwrap();
 	mimir_handle.join().unwrap();
 	web_handle.join().unwrap();
+
+	test_handle_1.join().unwrap();
 
 	println!();
 	println!("Exit simbld director.");

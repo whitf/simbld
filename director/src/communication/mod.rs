@@ -2,8 +2,9 @@ use bincode;
 use std::io::{Read, Write};
 use std::net::{TcpListener, TcpStream, Shutdown};
 use std::thread;
-use std::sync::mpsc::Sender;
+use std::sync::mpsc::{Receiver, Sender};
 
+use simbld_models::job::Job;
 use simbld_models::message::{Message, MessageType, ResponseType};
 use simbld_models::module::ModuleName;
 use simbld_models::log::{Log, LogType};
@@ -33,23 +34,25 @@ pub fn handle_worker_request(mut stream: TcpStream, ftx: Sender<Message>) {
 }
 
 pub struct Communication {
-	pub online:						bool,
 	pub address:					String,
-	pub port:						String,
-	pub ltx:						Sender<Log>,
 	pub ftx:						Sender<Message>,
+	pub jrx:						Receiver<Job>,	
+	pub ltx:						Sender<Log>,
+	pub online:						bool,
+	pub port:						String,
 }
 
 impl Communication {
-	pub fn new(address: String, port: String, ltx: Sender<Log>, ftx: Sender<Message>) -> Self {
+	pub fn new(address: String, port: String, ltx: Sender<Log>, ftx: Sender<Message>, jrx: Receiver<Job>) -> Self {
 		let ftx = ftx.clone();
 
 		Communication {
-			online: false,
 			address,
-			port,
-			ltx,
 			ftx,
+			jrx,
+			ltx,
+			online: false,
+			port,
 		}
 	}
 
