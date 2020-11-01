@@ -7,6 +7,7 @@ pub enum JobStatus {
 	Blocked,
 	Cancelled,
 	Failed,
+	New,
 	Pending,
 	Running,
 	Success,
@@ -41,7 +42,7 @@ impl Job {
 		let last_success: f64 = -1.0;
 
 		let start_time: f64 = -1.0; 
-		let status = JobStatus::Pending;
+		let status = JobStatus::New;
 		let suspended: bool = true;
 		let worker: Option<Uuid> = None;
 

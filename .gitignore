@@ -3,6 +3,7 @@ mimir/target/*
 models/target/*
 worker/target/*
 test/test_client/target/*
+test/generate_worker_data/target/*
 *.log
 *.swp
 
