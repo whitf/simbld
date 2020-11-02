@@ -6,6 +6,7 @@ use crate::job;
 
 #[derive(Debug, Deserialize, Serialize)]
 pub enum MessageType {
+	Heartbeat,
 	Job,
 	Log,
 	Online,

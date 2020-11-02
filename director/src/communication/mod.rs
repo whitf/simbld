@@ -14,9 +14,18 @@ pub fn handle_worker_request(mut stream: TcpStream, ftx: Sender<Message>) {
 
 	match stream.read(&mut data) {
 		Ok(_) => {
-			let msg: Message = bincode::deserialize(&data).unwrap();
 
-			//println!("message = {:?}", msg);
+			let msg: Message = bincode::deserialize(&data).unwrap();
+			let mut res: Message = Message::new(MessageType::Response);
+
+			match msg.message_type {
+				MessageType::Heartbeat => {
+					println!("received heartbeat from worker ({:?})", Some(msg.worker_id));
+
+
+				},
+				_ => {},
+			}
 
 			ftx.send(msg).unwrap();
 
@@ -32,6 +41,12 @@ pub fn handle_worker_request(mut stream: TcpStream, ftx: Sender<Message>) {
 		}
 	}
 }
+
+/*
+fn handle_heartbeat(msg: Message) -> Message {
+
+}
+*/
 
 pub struct Communication {
 	pub address:					String,

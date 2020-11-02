@@ -14,7 +14,7 @@ pub enum JobStatus {
 	Queued,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct Job {
 	pub build:					Uuid,
 	pub created_time:			SystemTime,
